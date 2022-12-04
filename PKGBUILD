@@ -35,8 +35,8 @@ build() {
         ;;
     esac
 
+    yarn install
     export NODE_ENV=production
-    yarn install # support yarn 3
     yarn icons
     yarn run electron-builder --linux --"$_arch" --dir \
         -c.electronDist=/usr/lib/electron \
