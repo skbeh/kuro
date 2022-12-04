@@ -1,5 +1,6 @@
 # shellcheck shell=bash
 # Maintainer: Aviana Cruz <gwencroft@proton.me>
+_electron_ver=18
 pkgname=kuro
 pkgver=8.1.6
 pkgrel=1
@@ -7,23 +8,16 @@ pkgdesc='An elegant Microsoft ToDo desktop client for Linux'
 arch=('any')
 url='https://github.com/davidsmorais/kuro'
 license=('MIT')
-depends=('electron')
+depends=("electron$_electron_ver")
 makedepends=('nodejs' 'yarn')
 provides=('ao' 'kuro')
 conflicts=('ao' 'ao-git' 'kuro-appimage')
 source=("$pkgname"
     "$pkgname.desktop"
     "$pkgname-$pkgver.tar.gz::$url/archive/refs/tags/v$pkgver.tar.gz")
-sha256sums=('93340f3310b5133058df40fe36482eb364cb514f53d8e594ea646f9cf0e21463'
+sha256sums=('d206aef3ec01016487003ae53f59b675ffcaae41d6c27f87f5a92f18bd3b75ab'
     'a7602db570ab593499661d88feb6775c1a97458df2493ac1fe91f24b14911d2c'
     '81d7656c7ef6927597b2e87fe28df2dcb60d9b0c80fd729f8171f62419b92d4f')
-_ver="$(</usr/lib/electron/version)"
-
-prepare() {
-    cd "$pkgname-$pkgver"
-    rm -rf build
-    yarn upgrade "electron@$_ver"
-}
 
 build() {
     cd "$pkgname-$pkgver"
@@ -42,10 +36,11 @@ build() {
     esac
 
     export NODE_ENV=production
+    yarn install # support yarn 3
     yarn icons
     yarn run electron-builder --linux --"$_arch" --dir \
         -c.electronDist=/usr/lib/electron \
-        -c.electronVersion="$_ver" \
+        -c.electronVersion="$_electron_ver" \
         --publish never
 }
 
